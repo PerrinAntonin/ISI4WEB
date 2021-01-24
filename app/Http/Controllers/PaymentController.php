@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Custormer;
 use App\Models\DeliveryAdd;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -81,27 +82,22 @@ class PaymentController extends Controller
         $deliveryAdd->phone_number = $request->phone_number;
         $deliveryAdd->email = $request->email;
 
-        $amountToBePaid = (double)Order::totalOrder();
+        $amountToBePaid = (float)Order::subtotal();
 
+        $order = Order::where('customer_id', Auth::user()->id)->first();
+        $order->delivery_add_id = $deliveryAdd->id;
+
+
+        $deliveryAdd->save();
+        Order::where('customer_id', '=', Auth::user()->id)->update(['delivery_add_id' => $deliveryAdd->id]);
         switch ($input["paymentmethod"]) {
 
             case "paypal":
-                // TODO Tester si l'api paypal marche
                 $payer = new Payer();
                 $payer->setPaymentMethod('paypal');
 
-                $item_1 = new Item();
-                $item_1->setName('Mobile Payment')/** item name **/
-                ->setCurrency('USD')
-                    ->setQuantity(1)
-                    ->setPrice($amountToBePaid);
-                /** unit price **/
-
-                $item_list = new ItemList();
-                $item_list->setItems(array($item_1));
-
                 $amount = new Amount();
-                $amount->setCurrency('USD')
+                $amount->setCurrency('EUR')
                     ->setTotal($amountToBePaid);
                 $redirect_urls = new RedirectUrls();
                 /** Specify return URL **/
@@ -110,7 +106,6 @@ class PaymentController extends Controller
 
                 $transaction = new Transaction();
                 $transaction->setAmount($amount)
-                    ->setItemList($item_list)
                     ->setDescription('Your transaction description');
 
                 $payment = new Payment();
@@ -125,13 +120,13 @@ class PaymentController extends Controller
                     echo '<pre>';
                     print_r(json_decode($ex->getData()));
                     exit;
-//                    if (\Config::get('app.debug')) {
-//                        \Session::put('error', 'Connection timeout');
-//                        return Redirect::route('/');
-//                    } else {
-//                        \Session::put('error', 'Some error occur, sorry for inconvenient');
-//                        return Redirect::route('/');
-//                    }
+                    if (\Config::get('app.debug')) {
+                        \Session::put('error', 'Connection timeout');
+                        return Redirect::route('/');
+                    } else {
+                        \Session::put('error', 'Some error occur, sorry for inconvenient');
+                        return Redirect::route('/');
+                    }
                 }
                 foreach ($payment->getLinks() as $link) {
                     if ($link->getRel() == 'approval_url') {
@@ -151,29 +146,25 @@ class PaymentController extends Controller
                 return Redirect::route('status');
                 break;
             case "cheque":
-                // TODO generer un pdf
                 return Redirect::route('genPDF');
                 break;
 
         }
-
-        $deliveryAdd->save();
 
 
     }
 
     public function getPaymentStatus(Request $request)
     {
-
+        // TODO: Payement type to Add
         /** Get the payment ID before session clear **/
         $payment_id = Session::get('paypal_payment_id');
         /** clear the session payment ID **/
         Session::forget('paypal_payment_id');
         if (empty($request->PayerID) || empty($request->token)) {
             session()->flash('error', 'Payment failed');
-            return view('status.error', [
-                'totalOrder' => Order::totalOrder(),
-            ]);
+            $message = 'La procédure de paiement a été annulé.';
+            return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
         }
         $payment = Payment::get($payment_id, $this->_api_context);
         $execution = new PaymentExecution();
@@ -183,21 +174,24 @@ class PaymentController extends Controller
 
         if ($result->getState() == 'approved') {
             session()->flash('success', 'Payment success');
-            return view('status.sucess', [
-                'totalOrder' => Order::totalOrder(),
-            ]);
-
+            $message = 'Le paiement a été effectué !';
+            return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
         }
+
         session()->flash('error', 'Payment failed');
-        return view('status.error', [
-            'totalOrder' => Order::totalOrder(),
-        ]);
+        $message = 'La procédure de paiement a été annulé.';
+        return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
     }
 
     // Generate PDF
     public function createPDF()
     {
+
+        $customer_info = Custormer::where('id', Auth::user()->custormer_id)->first();
+
         $order = Order::where('customer_id', Auth::user()->id)->first();
+
+        $del_add = DeliveryAdd::where('id', $order->delivery_add_id)->first();
         $order_items = OrderItem::where('order_id', $order->id)->get();
 
         $products = Product::select('products.id', 'name', 'price', 'image')
@@ -205,16 +199,24 @@ class PaymentController extends Controller
             ->where('order_id', '=', $order->id)
             ->get();
 
-
-//        view()->share('totalorder', ['totalOrder'=>$data]);
-        return view('layouts.pdf_view', [
+        $data = [
+            'order_id' => $order->id,
+            'del_add' => $del_add,
             'totalPrice' => Order::subtotal(),
             'totalOrder' => Order::totalOrder(),
             'order_items' => $order_items,
-            'Products' => $products,]);
+            'Products' => $products,];
 
-        $pdf = PDF::loadView('layouts.pdf_view', ['totalOrder' => $totalAmount]);
+//               return view('layouts.pdf_view', $data);
 
+
+        view()->share('data', $data);
+
+
+
+        $pdf = PDF::loadView('layouts.pdf_view',$data)->setPaper('A4', 'landscape');
+
+;
 
         // download PDF file with download method
         return $pdf->download('pdf_file.pdf');

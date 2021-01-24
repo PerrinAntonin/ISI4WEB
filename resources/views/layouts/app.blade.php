@@ -89,16 +89,14 @@
     @auth
         <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
-                <a href="{{route('profil')}}" class="btn amado-btn mb-15">Profil</a>
+                <a href="{{route('checkout')}}" class="btn amado-btn mb-15">Checkout</a>
                 <a href="{{route('logout')}}" class="btn amado-btn active">Logout</a>
 
             </div>
     @endauth
     <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
-            <a href="{{route('cart')}}" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>({{$totalOrder}})</span></a>
-            {{--                <a href="{{route('checkout')}}" class="search-nav"><img src="img/core-img/search.png" alt=""> Checkout</a>--}}
-            <a href="{{route('checkout')}}" class="cart-nav"><img src="img/core-img/search.png" alt=""> Checkout</a>
+            <a href="{{route('cart')}}" class="cart-nav"><img src="{{url('img/core-img/cart.png')}}" alt=""> Cart <span>({{$totalOrder}})</span></a>
         </div>
 
         <!-- Social Button -->
@@ -162,17 +160,17 @@
                             <div class="collapse navbar-collapse" id="footerNavContent">
                                 <ul class="navbar-nav ml-auto">
                                     <li class="nav-item active">
-                                        <a class="nav-link" href="index.html">Home</a>
+                                        <a class="nav-link" href="{{route('home')}}">Home</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="shop.html">Shop</a>
+                                        <a class="nav-link" href="{{route('shop')}}">Shop</a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link" href="cart.html">Cart</a>
+                                        <a class="nav-link" href="{{route('cart')}}">Cart</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="checkout.html">Checkout</a>
+                                        <a class="nav-link" href="{{route('checkout')}}">Checkout</a>
                                     </li>
                                 </ul>
                             </div>

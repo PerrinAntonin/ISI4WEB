@@ -28,7 +28,7 @@
 
                                     <td class="cart_product_img">
 
-                                        <a href="#"><img src="{{$Product->image}}" alt="Product"></a>
+                                        <a href="{{route('showProduct',['id' => $Product->id])}}"><img src="{{$Product->image}}" alt="Product"></a>
                                     </td>
                                     <td class="cart_product_desc">
                                         <h5>{{$Product->name}}</h5>

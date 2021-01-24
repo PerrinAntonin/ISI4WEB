@@ -19,7 +19,7 @@ class CreateCustormersTable extends Migration
             $table->string('firstname');
             $table->string('surname');
             $table->string('add1');
-            $table->string('add2');
+            $table->string('add2')->null;
             $table->string('postcode');
             $table->string('email');
             $table->string('phone');

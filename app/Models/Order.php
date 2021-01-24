@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
     use HasFactory;
+    public $fillable=['delivery_add_id'];
+    public $timestamps = false;
     public function scopeCheckIfOrderExist()
     {
         if (Auth::check()) {

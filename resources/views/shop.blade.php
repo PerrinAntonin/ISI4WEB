@@ -43,6 +43,7 @@
             <!-- Single Product Area -->
             <div class="col-12 col-sm-6 col-md-12 col-xl-6">
                 <div class="single-product-wrapper">
+                    <a href="{{route('showProduct',['id' => $Product->id])}}">
                     <!-- Product Image -->
                     <div class="product-img">
                         <img src="{{$Product->image}}" alt="">
@@ -53,10 +54,9 @@
                         <!-- Product Meta Data -->
                         <div class="product-meta-data">
                             <div class="line"></div>
-                            <p class="product-price">{{$Product->price}}</p>
-                            <a href="product-details.html">
+
                                 <h6>{{$Product->name}}</h6>
-                            </a>
+
                         </div>
                         <!-- Ratings & Cart -->
                         <div class="ratings-cart text-right">
@@ -69,10 +69,11 @@
                             </div>
 
                             <div class="cart">
-                                <a href="{{route('addCart',$Product->id)}}" data-toggle="tooltip" data-placement="left" title="Add to Cart"><i class="fa fa-cart-plus"></i></a>
+                                <a href="{{route('addCart',$Product->id)}}" data-toggle="tooltip" data-placement="left" title="Add to Cart"><i class="fa fa-cart-plus" style="font-size: 40px"></i></a>
                             </div>
                         </div>
                     </div>
+                    </a>
                 </div>
             </div>
             @endforeach

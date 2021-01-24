@@ -24,7 +24,7 @@ class CategoryController extends Controller
         if($activeCategory){
 
             $categories = Category::where('id','!=',$idCategory)->orWhereNull('id')->get();
-            $products = Product::where('cat_id',$idCategory)->paginate(8);
+            $products = Product::where('cat_id',$idCategory)->paginate(6);
 
             for ($i=0; $i < count($products); $i++) {
                 if(!$products[$i]->image){

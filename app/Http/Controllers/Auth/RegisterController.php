@@ -66,9 +66,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        // TODO verifier le lien pour le pannier
-        var_dump($data);
-        $customer =Custormer::create([
+        $customer = Custormer::create([
             'firstname' => $data['name'],
             'surname' => $data['surname'],
             'add1' => $data['add1'],
@@ -79,12 +77,22 @@ class RegisterController extends Controller
             ]);
 
 
-        return User::create([
+        $newUser = User::create([
             'email' => $data['email'],
             'custormer_id' => $customer->id,
             'password' => Hash::make($data['password']),
             'is_admin' => '0',
         ]);
+
+        $Id_session = session()->getID();
+        $order = Order::where('session_id', $Id_session)->first();
+
+        if ($order) {
+            $order->customer_id = $newUser->id;
+            $order->save();
+        }
+
+        return $newUser;
     }
 
     public function showRegisterForm(){

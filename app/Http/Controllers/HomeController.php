@@ -25,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::all()->take(8);
+        $products = Product::all()->take(10);
         for ($i=0; $i < count($products); $i++) {
             if(!$products[$i]->image){
                 $products[$i]->image = url("img/product-img/dummy.png");
