@@ -73,8 +73,8 @@
         <!-- Amado Nav -->
         <nav class="amado-nav">
             <ul>
-                <li class="active"><a href="{{route('home')}}">Home</a></li>
-                <li><a href="{{route('shop')}}">Shop</a></li>
+                <li @if (Route::currentRouteName()!='shop') class="active"@endif><a href="{{route('home')}}">Home</a></li>
+                <li @if (Route::currentRouteName()=='shop')class="active"@endif><a href="{{route('shop')}}">Shop</a></li>
 
             </ul>
         </nav>
@@ -105,8 +105,8 @@
     @endauth
 
     <!-- Cart Menu -->
-        <div class="cart-fav-search mb-100">
-            <a href="{{route('cart')}}" class="cart-nav"><img src="{{url('img/core-img/cart.png')}}" alt=""> Cart <span>({{$totalOrder}})</span></a>
+        <div class="cart-fav-search mb-100 ">
+            <a href="{{route('cart')}}" class="cart-nav "><img src="{{url('img/core-img/cart.png')}}" alt=""> Cart <span>({{$totalOrder}})</span></a>
         </div>
 
         <!-- Social Button -->

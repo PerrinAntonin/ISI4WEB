@@ -97,8 +97,8 @@
 
         <p class="conditions">
             Dans l’optique de finaliser votre commande, veuillez transmettre cette facture accompagnée du moyen de<br>
-            règlement choisi, soit un chèque, par la Poste à l’adresse : 6B Rue Aux-Saussaies-Des-Dames, 57950<br>
-            MONTIGNY-LES-METZ.<br><br>
+            règlement choisi, soit un chèque à l'ordre d'ISI4WEB, par la Poste à l’adresse :<br>
+            6B Rue Aux-Saussaies-Des-Dames, 57950 MONTIGNY-LES-METZ.<br><br>
 
             Attention : la durée de validité de ce document est deux semaines. Passé ce délai, il sera nécessaire de<br>
             renouveler une nouvelle commande.<br>

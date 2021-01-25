@@ -202,6 +202,6 @@ class PaymentController extends Controller
 
         $pdf = PDF::loadView('layouts.pdf_view', $data)->setPaper('A4');;
 
-        return $pdf->download('pdf_file.pdf');
+        return $pdf->download('FactureISI4WEB.pdf');
     }
 }

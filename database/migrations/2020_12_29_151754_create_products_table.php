@@ -20,6 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('description');
             $table->string('image');
             $table->double('price');
+            $table->integer('review')->default(0);
         });
     }
 

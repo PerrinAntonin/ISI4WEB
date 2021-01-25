@@ -61,11 +61,9 @@
                         <!-- Ratings & Cart -->
                         <div class="ratings-cart text-right">
                             <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
+                                @foreach(range(1, $Product->review) as $i)
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                @endforeach
                             </div>
 
                             <div class="cart">
