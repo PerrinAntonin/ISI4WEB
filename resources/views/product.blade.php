@@ -35,7 +35,7 @@
                         <!-- Ratings & Review -->
                         <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
                             <div class="ratings">
-                                @foreach(range(0, $Product->review) as $i)
+                                @foreach(range(1, $Product->review) as $i)
                                     <i class="fa fa-star" aria-hidden="true"></i>
                                 @endforeach
                             </div>
