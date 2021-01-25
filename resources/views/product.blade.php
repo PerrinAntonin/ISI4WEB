@@ -5,13 +5,12 @@
 <!-- Product Details Area Start -->
 <div class="single-product-area section-padding-100 clearfix">
     <div class="container-fluid">
-
         <div class="row">
             <div class="col-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mt-50">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Chairs</a></li>
+                        <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{route('shop',$category->id)}}">{{$category->name}}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{$Product->name}}</li>
                     </ol>
                 </nav>

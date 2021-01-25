@@ -22,14 +22,14 @@ class CreateCategoriesSeeder extends Seeder
                'name'=>'Biscuits',
             ],
             [
-                'name'=>'Viande',
+                'name'=>'Apero',
             ],
             [
-                'name'=>'Apero',
+                'name'=>'Viande',
             ],
         ];
 
-  
+
 
         foreach ($categories as $key => $value) {
 

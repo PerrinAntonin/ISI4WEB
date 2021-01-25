@@ -85,7 +85,7 @@ class RegisterController extends Controller
         ]);
 
         $Id_session = session()->getID();
-        $order = Order::where('session_id', $Id_session)->first();
+        $order = Order::where('session_id', $Id_session)->latest('date')->first();
 
         if ($order) {
             $order->customer_id = $newUser->id;

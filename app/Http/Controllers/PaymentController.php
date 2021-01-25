@@ -7,29 +7,25 @@ use App\Models\DeliveryAdd;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use Barryvdh\DomPDF\Facade as PDF;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Redirect;
+
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
-use PayPal\Api\Agreement;
 use PayPal\Api\Payer;
-use PayPal\Api\Plan;
-use PayPal\Api\PaymentDefinition;
-use PayPal\Api\PayerInfo;
-use PayPal\Api\Item;
-use PayPal\Api\ItemList;
 use PayPal\Api\Amount;
 use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
 
-use Illuminate\Support\Facades\Redirect;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 class PaymentController extends Controller
@@ -52,15 +48,15 @@ class PaymentController extends Controller
 
         if ($totalOrder != 0) {
             if (Auth::check()) {
+                $userinfo = Custormer::find(auth()->user()->custormer_id);
                 return view('checkout', [
                     'totalOrder' => Order::totalOrder(),
                     'totalPrice' => Order::subtotal(),
+                    'userinfo' =>$userinfo,
                 ]);
             } else {
-
                 return Redirect::route('login');
             }
-
         } else {
             return Redirect::back()->withErrors(['msg', 'no cart found']);
         }
@@ -84,15 +80,16 @@ class PaymentController extends Controller
 
         $amountToBePaid = (float)Order::subtotal();
 
-        $order = Order::where('customer_id', Auth::user()->id)->first();
-        $order->delivery_add_id = $deliveryAdd->id;
-
-
+        $order = Order::where('customer_id', Auth::user()->custormer_id)->latest('date')->first();
         $deliveryAdd->save();
-        Order::where('customer_id', '=', Auth::user()->id)->update(['delivery_add_id' => $deliveryAdd->id]);
+        $order->update(['delivery_add_id' => $deliveryAdd->id]);
+
         switch ($input["paymentmethod"]) {
 
             case "paypal":
+                $order->update(['payment_type' => "paypal"]);
+                $order->update(['status' => "payementOk"]);
+
                 $payer = new Payer();
                 $payer->setPaymentMethod('paypal');
 
@@ -115,16 +112,14 @@ class PaymentController extends Controller
                     ->setTransactions(array($transaction));
 
                 try {
+
                     $payment->create($this->_api_context);
                 } catch (\PayPal\Exception\PPConnectionException $ex) {
-                    echo '<pre>';
-                    print_r(json_decode($ex->getData()));
-                    exit;
-                    if (\Config::get('app.debug')) {
-                        \Session::put('error', 'Connection timeout');
+                    if (Config::get('app.debug')) {
+                        Session::put('error', 'Connection timeout');
                         return Redirect::route('/');
                     } else {
-                        \Session::put('error', 'Some error occur, sorry for inconvenient');
+                        Session::put('error', 'Some error occur, sorry for inconvenient');
                         return Redirect::route('/');
                     }
                 }
@@ -136,27 +131,25 @@ class PaymentController extends Controller
                 }
 
                 /** add payment ID to session **/
-                \Session::put('paypal_payment_id', $payment->getId());
+                Session::put('paypal_payment_id', $payment->getId());
                 if (isset($redirect_url)) {
                     /** redirect to paypal **/
                     return Redirect::away($redirect_url);
                 }
 
-                \Session::put('error', 'Unknown error occurred');
+                Session::put('error', 'Unknown error occurred');
                 return Redirect::route('status');
-                break;
+
             case "cheque":
+
+                $order->update(['payment_type' => "cheque",'status' => "waitCheque"]);
                 return Redirect::route('genPDF');
-                break;
 
         }
-
-
     }
 
     public function getPaymentStatus(Request $request)
     {
-        // TODO: Payement type to Add
         /** Get the payment ID before session clear **/
         $payment_id = Session::get('paypal_payment_id');
         /** clear the session payment ID **/
@@ -164,7 +157,7 @@ class PaymentController extends Controller
         if (empty($request->PayerID) || empty($request->token)) {
             session()->flash('error', 'Payment failed');
             $message = 'La procédure de paiement a été annulé.';
-            return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
+            return view('status', ['status' => $message, 'totalOrder' => Order::totalOrder(),]);
         }
         $payment = Payment::get($payment_id, $this->_api_context);
         $execution = new PaymentExecution();
@@ -175,28 +168,25 @@ class PaymentController extends Controller
         if ($result->getState() == 'approved') {
             session()->flash('success', 'Payment success');
             $message = 'Le paiement a été effectué !';
-            return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
+            return view('status', ['status' => $message, 'totalOrder' => Order::totalOrder(),]);
         }
 
         session()->flash('error', 'Payment failed');
         $message = 'La procédure de paiement a été annulé.';
-        return view('status', ['status' => $message, 'totalOrder'=> Order::totalOrder(),]);
+        return view('status', ['status' => $message, 'totalOrder' => Order::totalOrder(),]);
     }
 
     // Generate PDF
     public function createPDF()
     {
-
-        $customer_info = Custormer::where('id', Auth::user()->custormer_id)->first();
-
-        $order = Order::where('customer_id', Auth::user()->id)->first();
+        $order = Order::where('customer_id', Auth::user()->id)->latest('date')->first();
+        $order_items = OrderItem::where('order_id', $order->id)->get();
 
         $del_add = DeliveryAdd::where('id', $order->delivery_add_id)->first();
-        $order_items = OrderItem::where('order_id', $order->id)->get();
 
         $products = Product::select('products.id', 'name', 'price', 'image')
             ->join('order_items', 'order_items.product_id', '=', 'products.id')
-            ->where('order_id', '=', $order->id)
+            ->where('order_id', $order->id)
             ->get();
 
         $data = [
@@ -207,18 +197,11 @@ class PaymentController extends Controller
             'order_items' => $order_items,
             'Products' => $products,];
 
-//               return view('layouts.pdf_view', $data);
-
-
+//        return view('layouts.pdf_view', $data);
         view()->share('data', $data);
 
+        $pdf = PDF::loadView('layouts.pdf_view', $data)->setPaper('A4');;
 
-
-        $pdf = PDF::loadView('layouts.pdf_view',$data)->setPaper('A4', 'landscape');
-
-;
-
-        // download PDF file with download method
         return $pdf->download('pdf_file.pdf');
     }
 }

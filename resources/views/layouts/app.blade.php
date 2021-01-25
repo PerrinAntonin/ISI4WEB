@@ -11,10 +11,10 @@
     <title>ISIWEB4Shop</title>
 
     <!-- Favicon  -->
-    <link rel="icon" href="img/core-img/favicon.png">
+    <link rel="icon" href="{{url("img/core-img/favicon.png")}}">
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="{{url('css/core-style.css')}}">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{{url("css/style.css")}}">
 
 </head>
 
@@ -28,7 +28,7 @@
 
         <div class="amado-navbar-brand">
 
-            <a href="{{url('home')}}">
+            <a href="{{route('home')}}">
                 <svg>
                     <g>
                         <path
@@ -56,7 +56,7 @@
         </div>
         <!-- Logo -->
         <div class="logo">
-            <a href="{{url('home')}}">
+            <a href="{{route('home')}}">
                 <svg>
                     <g>
                         <path
@@ -87,13 +87,23 @@
     @endguest
 
     @auth
+        @if(Auth::user()->is_admin)
+            <!-- Button Group -->
+                <div class="amado-btn-group mt-30 mb-100">
+                    <a href="{{route('admin.home')}}" class="btn amado-btn mb-15">Pannel admin</a>
+                    <a href="{{route('logout')}}" class="btn amado-btn active">Logout</a>
+
+                </div>
+        @else
         <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="{{route('checkout')}}" class="btn amado-btn mb-15">Checkout</a>
                 <a href="{{route('logout')}}" class="btn amado-btn active">Logout</a>
 
             </div>
+        @endif
     @endauth
+
     <!-- Cart Menu -->
         <div class="cart-fav-search mb-100">
             <a href="{{route('cart')}}" class="cart-nav"><img src="{{url('img/core-img/cart.png')}}" alt=""> Cart <span>({{$totalOrder}})</span></a>
@@ -121,7 +131,7 @@
                 <div class="single_widget_area">
                     <!-- Logo -->
                     <div class="footer-logo mr-50">
-                        <a href="{{url('home')}}">
+                        <a href="{{route('home')}}">
                             <svg>
                                 <g>
                                     <path
@@ -184,15 +194,19 @@
 <!-- ##### Footer Area End ##### -->
 
 <!-- ##### jQuery (Necessary for All JavaScript Plugins) ##### -->
-<script src="js/jquery/jquery-2.2.4.min.js"></script>
-<!-- Popper js -->
-<script src="js/popper.min.js"></script>
+{{--<script src="{{url('js/jquery/jquery-2.2.4.min.js')}}"></script>--}}
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script>$(document).ready(function(){
+        $('.table').css( "overflow", "visible" );
+    });</script>
+{{--<!-- Popper js -->--}}
+<script src="{{url('js/popper.min.js')}}"></script>
 <!-- Bootstrap js -->
-<script src="js/bootstrap.min.js"></script>
+<script src="{{url('js/bootstrap.min.js')}}"></script>
 <!-- Plugins js -->
-<script src="js/plugins.js"></script>
+<script src="{{url('js/plugins.js')}}"></script>
 <!-- Active js -->
-<script src="js/active.js"></script>
+<script src="{{url('js/active.js')}}"></script>
 
 </body>
 

@@ -16,10 +16,10 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" name="firstname" id="first_name" value="" placeholder="First Name" required>
+                                    <input type="text" class="form-control" name="firstname" id="first_name" value="{{$userinfo->firstname}}" placeholder="First Name" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" name="lastname" id="last_name" value="" placeholder="Last Name" required>
+                                    <input type="text" class="form-control" name="lastname" id="last_name" value="{{$userinfo->surname}}" placeholder="Last Name" required>
                                 </div>
 
                                 <div class="col-12 mb-3">
@@ -34,26 +34,30 @@
                                         <option value="can">Canada</option>
                                     </select>
                                 </div>
+
                                 <div class="col-12 mb-3">
-                                    <input type="text" class="form-control mb-3" name="add1" id="street_address" placeholder="Address" required>
+                                    <input type="text" class="form-control mb-3" name="add1" id="street_address" value="{{$userinfo->add1}}" placeholder="Address" required>
                                 </div>
 
                                 <div class="col-12 mb-3">
-                                    <input type="text" class="form-control mb-3" name="add2" id="street_address" placeholder="Add2" >
+                                    <input type="text" class="form-control mb-3" name="add2" id="street_address" value="{{$userinfo->add2}}" placeholder="Add2" >
                                 </div>
+
                                 <div class="col-12 mb-3">
                                     <input type="text" class="form-control" name="city" id="city" placeholder="Town" required>
                                 </div>
+
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" name="zipCode" id="zipCode" placeholder="Zip Code" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <input type="number" class="form-control" name="phone_number" id="phone_number" min="0" placeholder="Phone No" required>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
+                                    <input type="text" class="form-control" name="zipCode" id="zipCode" value="{{$userinfo->postcode}} "placeholder="Zip Code" required>
                                 </div>
 
+                                <div class="col-md-6 mb-3">
+                                    <input type="number" class="form-control" name="phone_number" id="phone_number" value="{{$userinfo->phone}}" min="0" placeholder="Phone No" required>
+                                </div>
+
+                                <div class="col-12 mb-3">
+                                    <input type="email" class="form-control" name="email" id="email" value="{{$userinfo->email}}" placeholder="Email" required>
+                                </div>
 
                             </div>
                         </form>

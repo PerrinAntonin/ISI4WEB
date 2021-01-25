@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     /**
-     * Display the shop with aspecified category.
+     * Display the shop with a specified category.
      *
      */
     public function index($idCategory = null)
@@ -43,6 +43,5 @@ class CategoryController extends Controller
         }else{
             return abort(404);
         }
-
     }
 }

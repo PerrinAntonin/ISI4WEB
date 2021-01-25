@@ -43,6 +43,7 @@ class LoginController extends Controller
 
     public function login(Request $request){
         $input = $request->all();
+        $Id_session = session()->getID();
         $this->validate($request,[
         'email'=>'required|email',
         'password' => 'required',]);
@@ -50,11 +51,19 @@ class LoginController extends Controller
             if(auth()->user()->is_admin == 1){
                 return redirect()->route('admin.home');
             }else{
+                $order = Order::where('session_id', $Id_session)->latest('date')->first();
+
+                if ($order) {
+                    $order->customer_id = auth()->user()->id;
+                    $order->save();
+                }
+                var_dump("test");
                 return redirect()->route('home');
             }
         }else{
             return redirect()->route('login')->with('error','password of username is incorect');
         }
+
     }
 
     public function showLoginForm(){

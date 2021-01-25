@@ -19,10 +19,10 @@ class CreateOrdersTable extends Migration
             $table->string('session_id')->nullable();
             $table->boolean('registered')->default('0');
             $table->integer('delivery_add_id')->nullable();
-            $table->string('payment_type')->nullable();
+            $table->string('payment_type')->default('unknow');
             $table->dateTime('date');
-            $table->string('status')->default('test')->nullable();
-            $table->integer('total')->default('0');
+            $table->string('status')->default('noPayment');
+            $table->float('total')->default('0');
         });
     }
 

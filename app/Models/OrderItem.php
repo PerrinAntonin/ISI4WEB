@@ -15,12 +15,4 @@ class OrderItem extends Model
         'product_id'
     ];
     public $timestamps = false;
-
-
-    public function scopeModifyItem($id)
-    {
-        $total = (int)OrderItem::find($id)["quantity"];
-        $total +=1;
-        OrderItem::find($id)->update("quantity",$total);
-    }
 }
